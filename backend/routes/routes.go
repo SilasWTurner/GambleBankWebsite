@@ -21,17 +21,10 @@ func SetupRouter() *gin.Engine {
 	protected := router.Group("/")
 	protected.Use(AuthMiddleware())
 	{
-		protected.GET("/play", func(c *gin.Context) {
-			c.JSON(200, gin.H{
-				"message": "Welcome to the play area!",
-			})
-		})
-
-		protected.GET("/leaderboard", func(c *gin.Context) {
-			c.JSON(200, gin.H{
-				"message": "Welcome to the leaderboard!",
-			})
-		})
+		protected.POST("/send_invite", SendInvite)
+		protected.GET("/list_invites", ListInvites)
+		protected.GET("/ws", WebSocketHandler)
+		protected.POST("/accept_invite", AcceptInvite)
 	}
 
 	return router

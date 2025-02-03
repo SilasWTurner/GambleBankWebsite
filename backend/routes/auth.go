@@ -11,7 +11,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var jwtKey = []byte("your_secret_key")
+var jwtKey = []byte("gamblebank_ftw")
 
 type Claims struct {
 	Username string `json:"username"`
@@ -89,5 +89,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"token": tokenString})
+	webSocketURL := "ws://localhost:8080/ws?username=" + input.Username
+
+	c.JSON(http.StatusOK, gin.H{"token": tokenString, "websocket_url": webSocketURL})
 }

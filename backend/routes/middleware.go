@@ -27,6 +27,7 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
+		// Set the username in the context
 		c.Set("username", claims.Username)
 		c.Next()
 	}

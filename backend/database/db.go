@@ -20,7 +20,9 @@ func Init() {
 	// Automatically migrate all models
 	modelsToMigrate := []interface{}{
 		&models.User{},
-		// Add other models here
+		&models.GameInvites{},
+		&models.OngoingGames{},
+		&models.CompletedGames{},
 	}
 
 	for _, model := range modelsToMigrate {

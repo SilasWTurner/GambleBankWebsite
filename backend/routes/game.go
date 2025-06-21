@@ -93,7 +93,7 @@ func ListInvites(c *gin.Context) {
 	if err := database.DB.Table("game_invites").
 		Select("game_invites.id, game_invites.sender_id, users.username as sender_name, game_invites.created_at").
 		Joins("left join users on users.id = game_invites.sender_id").
-		Where("game_invites.receiver_id = ?", receiver.ID).
+		Where("game_invites.receiver_id = ? AND game_invites.deleted_at IS NULL", receiver.ID). // Check for deleted_at being NULL
 		Scan(&gameInvites).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to retrieve game invites"})
 		return
@@ -122,4 +122,37 @@ func AcceptInvite(c *gin.Context) {
 	acceptInvite(receiverUsername.(string), requestBody.InviteID)
 
 	c.JSON(http.StatusOK, gin.H{"message": "invite accepted"})
+}
+
+func RejectInvite(c *gin.Context) {
+	// Get the receiver's username from the context
+	receiverUsername, exists := c.Get("username")
+	if !exists {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "username not found in context"})
+		return
+	}
+
+	// Get the invite ID from the request body
+	var requestBody struct {
+		InviteID int `json:"invite_id"`
+	}
+	if err := c.ShouldBindJSON(&requestBody); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Get the receiver's user information from the database
+	var receiver models.User
+	if err := database.DB.Where("username = ?", receiverUsername).First(&receiver).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "receiver not found"})
+		return
+	}
+
+	// Delete the invite from the database
+	if err := database.DB.Where("id = ? AND receiver_id = ?", requestBody.InviteID, receiver.ID).Delete(&models.GameInvites{}).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to reject invite"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "invite rejected"})
 }

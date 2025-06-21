@@ -46,7 +46,25 @@ func Signup(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "User created successfully"})
+	// Generate JWT token with 30 days expiration time
+	expirationTime := time.Now().Add(30 * 24 * time.Hour)
+	claims := &Claims{
+		Username: user.Username,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: expirationTime.Unix(),
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, err := token.SignedString(jwtKey)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
+		return
+	}
+
+	webSocketURL := "ws://localhost:8080/ws?username=" + user.Username
+
+	c.JSON(http.StatusOK, gin.H{"message": "User created successfully", "token": tokenString, "websocket_url": webSocketURL})
 }
 
 func Login(c *gin.Context) {
@@ -73,8 +91,8 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	// Generate JWT token
-	expirationTime := time.Now().Add(24 * time.Hour)
+	// Generate JWT token with 30 days expiration time
+	expirationTime := time.Now().Add(30 * 24 * time.Hour)
 	claims := &Claims{
 		Username: input.Username,
 		StandardClaims: jwt.StandardClaims{

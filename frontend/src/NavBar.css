@@ -1,0 +1,58 @@
+.navbar {
+  height: 100vh;
+  width: 200px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: #333;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch; /* Ensure items span the full width */
+  padding-top: 20px;
+}
+
+.navbar a {
+  padding: 10px 15px;
+  text-decoration: none;
+  font-size: 18px;
+  color: white;
+  display: block;
+  text-align: center;
+  width: auto; /* Make sure the link spans the full width */
+}
+
+.navbar-bottom {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 30px;
+}
+
+.username {
+  padding: 10px 15px;
+  text-decoration: none;
+  font-size: 18px;
+  color: white;
+  display: block;
+  text-align: center;
+  width: auto; /* Make sure the link spans the full width */
+}
+
+button {
+  padding: 10px 15px;
+  text-decoration: none;
+  font-size: 18px;
+  color: white;
+  display: block;
+  text-align: center;
+  width: auto; /* Make sure the link spans the full width */
+}
+
+button:hover {
+  background-color: #444;
+}
+
+.navbar a:hover {
+  background-color: #575757;
+}

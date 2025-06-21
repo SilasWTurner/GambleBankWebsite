@@ -4,9 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SetupRouter() *gin.Engine {
-	router := gin.Default()
-
+func SetupRouter(router *gin.Engine) {
 	// Define your routes here
 	router.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{
@@ -17,15 +15,16 @@ func SetupRouter() *gin.Engine {
 	router.POST("/signup", Signup)
 	router.POST("/login", Login)
 
+	// WebSocket endpoint (not protected by AuthMiddleware)
+	router.GET("/ws", WebSocketHandler)
+
 	// Protected routes
 	protected := router.Group("/")
 	protected.Use(AuthMiddleware())
 	{
 		protected.POST("/send_invite", SendInvite)
 		protected.GET("/list_invites", ListInvites)
-		protected.GET("/ws", WebSocketHandler)
 		protected.POST("/accept_invite", AcceptInvite)
+		protected.POST("/reject_invite", RejectInvite)
 	}
-
-	return router
 }
